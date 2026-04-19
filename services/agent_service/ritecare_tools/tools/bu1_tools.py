@@ -4,11 +4,13 @@ from shared.http_client import resilient_request
 _BASE_URL = settings.bu1_base_url
 
 
-async def get_customer_by_id(customer_id: str) -> dict:
+async def get_customer_by_id(customer_id: str, tool_context) -> dict:
     """
     Fetches customer details by ID from BU1 onboarding service.
     """
-    resp = await resilient_request("GET", f"{_BASE_URL}/customers/{customer_id}", "bu1")
+    token = tool_context.state.get("downstream_token")
+    headers = {"Authorization" : "Bearer {token}"}
+    resp = await resilient_request("GET", f"{_BASE_URL}/customers/{customer_id}", "bu1", headers=headers)
     return resp.json()
 
 

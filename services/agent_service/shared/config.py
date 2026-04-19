@@ -31,5 +31,8 @@ class Settings(BaseSettings):
     log_level:str = "INFO"
     env: str = "development"
 
+    jwt_secret: str = "MY_SECRET"
+    jwt_algorithm: str = "HS256"
+
 settings = Settings()
 

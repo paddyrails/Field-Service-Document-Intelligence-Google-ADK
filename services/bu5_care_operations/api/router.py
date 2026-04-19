@@ -4,6 +4,7 @@ from api.dependencies import get_visit_service
 from common.schemas.request import RAGSearchRequest, VisitClaimRequest, VisitCreateRequest, VisitStatusUpdateRequest
 from common.schemas.response import ClaimVisitResponse, RAGSearchResponse, VisitResponse
 from service.visit_service import VisitService
+from common.auth import require_bu
 
 router = APIRouter()
 
@@ -17,6 +18,7 @@ rag_router = APIRouter(prefix="/rag", tags=["rag"])
 async def create_visit(
     body: VisitCreateRequest,
     service: VisitService = Depends(get_visit_service),
+    user: dict = Depends(require_bu("bu1"))
 ) -> VisitResponse:
     return await service.create_visit(body)
 

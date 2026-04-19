@@ -27,5 +27,7 @@ class Settings(BaseSettings):
     env: str = "development"
     app_port: int = 8006
 
+    jwt_secret: str = "MYSECRET"
+
 
 settings = Settings()

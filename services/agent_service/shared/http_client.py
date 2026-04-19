@@ -6,6 +6,7 @@ async def resilient_request(
     method: str,
     url: str,
     service_name: str,
+    headers: dict | None = None,
     **kwargs,
 ) -> httpx.Response:
 
@@ -16,7 +17,7 @@ async def resilient_request(
     )
     async def _call():
         async with httpx.AsyncClient() as client:
-            response = await client.request(method, url, timeout=10.0, **kwargs)
+            response = await client.request(method, url, timeout=10.0, headers=headers, **kwargs)
             response.raise_for_status()
             return response
 
