@@ -1,0 +1,22 @@
+[
+  {
+    "query": "List all visits for patient P100",
+    "expected_tool_use": [
+      {
+        "tool_name": "list_patient_visits",
+        "tool_input": { "patient_id": "P100" }
+      }
+    ],
+    "reference": "visits for patient P100"
+  },
+  {
+    "query": "Search care documents for physical-therapy recovery exercises",
+    "expected_tool_use": [
+      {
+        "tool_name": "search_care_documents",
+        "tool_input": { "query": "physical-therapy recovery exercises" }
+      }
+    ],
+    "reference": "physical-therapy recovery"
+  }
+]
