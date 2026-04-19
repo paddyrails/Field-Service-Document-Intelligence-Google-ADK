@@ -1,0 +1,60 @@
+{
+  "eval_set_id": "ritecare-response-quality-v1",
+  "name": "RiteCare Response Quality",
+  "description": "Validates agent response quality and BU citation",
+  "eval_cases": [
+    {
+      "eval_id": "bu5-visit-lookup",
+      "conversation": [
+        {
+          "invocation_id": "turn-1",
+          "user_content": {
+            "role": "user",
+            "parts": [{ "text": "Show me patient visit V789" }]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "Here are the details for visit V789 from BU5 (Care Operations)" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "get_visit_by_id", "args": { "visit_id": "V789" } }
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "ritecare",
+        "user_id": "eval_user",
+        "state": { "user_role": "admin" }
+      }
+    },
+    {
+      "eval_id": "cross-bu-query",
+      "conversation": [
+        {
+          "invocation_id": "turn-1",
+          "user_content": {
+            "role": "user",
+            "parts": [{ "text": "Get customer C123 details and their support tickets" }]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "Customer details from BU1 and support tickets from BU4" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "get_customer_by_id", "args": { "customer_id": "C123" } },
+              { "name": "list_tickets", "args": { "customer_id": "C123" } }
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "ritecare",
+        "user_id": "eval_user",
+        "state": { "user_role": "admin" }
+      }
+    }
+  ]
+}

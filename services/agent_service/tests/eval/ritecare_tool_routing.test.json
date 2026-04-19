@@ -1,0 +1,86 @@
+[
+  {
+    "query": "What is the onboarding status for customer C123?",
+    "expected_tool_use": [
+      {
+        "tool_name": "get_onboarding_status",
+        "tool_input": { "customer_id": "C123" }
+      }
+    ],
+    "reference": "The onboarding status for customer C123"
+  },
+  {
+    "query": "Show me the service contract CON-456",
+    "expected_tool_use": [
+      {
+        "tool_name": "get_contract_by_id",
+        "tool_input": { "contract_id": "CON-456" }
+      }
+    ],
+    "reference": "Contract CON-456"
+  },
+  {
+    "query": "List all invoices for customer C789",
+    "expected_tool_use": [
+      {
+        "tool_name": "list_invoices",
+        "tool_input": { "customer_id": "C789" }
+      }
+    ],
+    "reference": "Invoices for customer C789"
+  },
+  {
+    "query": "What's the status of support ticket TK-101?",
+    "expected_tool_use": [
+      {
+        "tool_name": "get_ticket_by_id",
+        "tool_input": { "ticket_id": "TK-101" }
+      }
+    ],
+    "reference": "Ticket TK-101"
+  },
+  {
+    "query": "Show me patient visit V789",
+    "expected_tool_use": [
+      {
+        "tool_name": "get_visit_by_id",
+        "tool_input": { "visit_id": "V789" }
+      }
+    ],
+    "reference": "Visit V789"
+  },
+  {
+    "query": "What are the skilled-nursing wound care protocols?",
+    "expected_tool_use": [
+      {
+        "tool_name": "search_care_documents",
+        "tool_input": { "query": "skilled-nursing wound care protocols" }
+      }
+    ],
+    "reference": "skilled-nursing wound care"
+  },
+  {
+    "query": "Find me onboarding documents about insurance policy requirements",
+    "expected_tool_use": [
+      {
+        "tool_name": "search_onboarding_docs",
+        "tool_input": { "query": "insurance policy requirements" }
+      }
+    ],
+    "reference": "insurance policy onboarding"
+  },
+  {
+    "query": "I need the subscription details and recent invoices for customer C500",
+    "expected_tool_use": [
+      {
+        "tool_name": "get_subscription",
+        "tool_input": { "customer_id": "C500" }
+      },
+      {
+        "tool_name": "list_invoices",
+        "tool_input": { "customer_id": "C500" }
+      }
+    ],
+    "reference": "subscription and invoices for customer C500"
+  }
+]
