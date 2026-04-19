@@ -38,6 +38,22 @@ RAG_TOOL_NAMES = {
     "search_bu_documents",                                                    
 }
 
+# ---- Role base tool access Contetol --------------
+ROLE_TOOL_ACCESS = {
+        "field_officer": {
+            "get_visit_by_id", "list_patient_visits", "search_care_documents",
+            "search_bu_documents", #get_my_visits
+        },
+        "support_agent": {
+            "get_customer_by_id", "get_onboarding_status", "search_onboarding_docs",
+            "get_contract_by_id", "list_contracts", "list_visits",
+            "search_service_manuals",  "get_subscription", "list_invoices", "search_billing_statements",
+            "search_bu_documents", "get_ticket_by_id", "list_tickets", "search_knowledge_base",
+            "search_resolved_tickets", "search_bu_documents",      
+        },
+        "admin": "*",
+}
+
 def _extract_docs(tool_result) -> list[str]:
     """Normalize a RAG tool result into a list of text chunks"""
     if isinstance(tool_result, list):
@@ -49,20 +65,36 @@ def _extract_docs(tool_result) -> list[str]:
 
 def after_tool_callback(tool, args, tool_context, tool_response):
     """Capture RAG results into session state so we can ground check later"""
-    if tool.name in RAG_TOOL_NAMES:
-        docs = tool_context.state.get("retrieved_docs", [])
-        docs.extend(_extract_docs(tool_response))
-        
-        tool_context.state["retrieved_docs"] = tool_context.state.get("retrieved_docs",
-  []) + _extract_docs(tool_response) 
+    if tool.name in RAG_TOOL_NAMES:        
+        tool_context.state["retrieved_docs"] = tool_context.state.get("retrieved_docs", []) + _extract_docs(tool_response) 
     return None
+
+
+def before_tool_callback(tool, args, tool_context):
+    """Authorization gate - blocks class ther user's role can't access"""
+    user_role = tool_context.state.get("user_role", "anonymous")
+    allowed = ROLE_TOOL_ACCESS.get(user_role)
+
+    if allowed is None:
+        return {"error": f"Unknow rile '{user_role}' - access denied"}
+    if allowed == "*":
+        return None
+    if tool.name not in allowed:
+        return {"error": f"Role '{user_role}' is not authorized to use '{tool.name}"}
+    
+    return None
+
+
+
 
 def before_model_callback(callback_context, llm_request):
     """Input guardrail - runs before each LLM call"""
     if not llm_request.contents or not llm_request.contents[-1].parts:
         return None
     
-    user_text = llm_request.contents[-1].parts[0].text or ""
+    user_text = llm_request.contents[-1].parts[0].text
+    if not user_text:
+        return None
 
     #check for prompt injections
     error = detect_prompt_injection(user_text)
@@ -131,5 +163,6 @@ root_agent = Agent(
     ],
     before_model_callback=before_model_callback,
     after_model_callback=after_model_callback,
-    after_tool_callback=after_tool_callback
+    after_tool_callback=after_tool_callback,
+    before_tool_callback=before_tool_callback
 )

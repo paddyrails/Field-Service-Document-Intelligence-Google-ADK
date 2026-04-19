@@ -49,8 +49,9 @@ async def query(
     response_text = ""
     async for event in runner.run_async(
         user_id=request.user_id,
+        user_role="field_officer",
         session_id=request.session_id,
-        new_message=content
+        new_message=content,
     ):
         if event.is_final_response() and event.content:
             response_text = event.content.parts[0].text

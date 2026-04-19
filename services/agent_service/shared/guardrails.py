@@ -25,7 +25,7 @@ DOMAIN_KEYWORDS = [
     "patient", "visit", "care", "nursing", "therapy", "billing",
     "invoice", "ticket", "support", "contract", "customer",
     "onboarding", "kyc", "subscription", "appointment", "insurance",
-    "schedule", "service", "maintenance", "claim", "status",
+    "schedule", "service", "maintenance", "claim", "status"
     
 ]
 

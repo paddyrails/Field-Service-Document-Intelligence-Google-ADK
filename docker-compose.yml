@@ -1,3 +1,5 @@
+name: ritecare
+
 services:
   # ── API Gateway ──────────────────────────────────────────────────────────────
 
@@ -101,6 +103,40 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # ── Auth Service ──────────────────────────────────────────────────────────────
+
+  auth_service:
+    build:
+      context: ./services/auth_service
+      dockerfile: Dockerfile
+    container_name: ritecare-auth
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ritecare}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-60}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      ENV: ${ENV:-production}
+      APP_PORT: 8010
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
+      - "traefik.http.routers.auth.entrypoints=web"
+      - "traefik.http.services.auth.loadbalancer.server.port=8010"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8010/health')",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+
   # ── Agent ─────────────────────────────────────────────────────────────────────
 
   agent:
@@ -115,6 +151,7 @@ services:
       GOOGLE_CHAT_MODEL: ${GOOGLE_CHAT_MODEL:-gemini-2.5-flash}
       GOOGLE_EMBEDDING_MODEL: ${GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
       RAG_TOP_K: ${RAG_TOP_K:-5}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
       BU1_BASE_URL: http://bu1_onboarding:8001
       BU2_BASE_URL: http://bu2_sales_maintenance:8002
       BU3_BASE_URL: http://bu3_billing_subscription:8003
@@ -164,6 +201,7 @@ services:
       MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ritecare}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       GOOGLE_EMBEDDING_MODEL: ${GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
       RAG_CHUNK_SIZE: ${RAG_CHUNK_SIZE:-500}
       RAG_CHUNK_OVERLAP: ${RAG_CHUNK_OVERLAP:-50}
       RAG_TOP_K: ${RAG_TOP_K:-5}
@@ -203,6 +241,7 @@ services:
       MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ritecare}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       GOOGLE_EMBEDDING_MODEL: ${GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
       RAG_CHUNK_SIZE: ${RAG_CHUNK_SIZE:-500}
       RAG_CHUNK_OVERLAP: ${RAG_CHUNK_OVERLAP:-50}
       RAG_TOP_K: ${RAG_TOP_K:-5}
@@ -242,6 +281,7 @@ services:
       MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ritecare}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       GOOGLE_EMBEDDING_MODEL: ${GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
       RAG_CHUNK_SIZE: ${RAG_CHUNK_SIZE:-500}
       RAG_CHUNK_OVERLAP: ${RAG_CHUNK_OVERLAP:-50}
       RAG_TOP_K: ${RAG_TOP_K:-5}
@@ -281,6 +321,7 @@ services:
       MONGODB_DB_NAME: ${MONGODB_DB_NAME:-ritecare}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       GOOGLE_EMBEDDING_MODEL: ${GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
       RAG_CHUNK_SIZE: ${RAG_CHUNK_SIZE:-500}
       RAG_CHUNK_OVERLAP: ${RAG_CHUNK_OVERLAP:-50}
       RAG_TOP_K: ${RAG_TOP_K:-5}
@@ -321,6 +362,7 @@ services:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       GOOGLE_EMBEDDING_MODEL: ${GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
       RAG_TOP_K: ${RAG_TOP_K:-5}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
       AGENT_BASE_URL: http://agent:8000
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       KAFKA_TOPIC: appointment.booked
